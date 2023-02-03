@@ -11,6 +11,11 @@ app.logger.setLevel(logging.INFO)
 
 
 def parse_command():
+    """Parses command line arguments and returns them.
+    
+    :rtype: tuple(str, str, str)
+    :return: A tuple of the run type, resume part and path to the CV file.
+    """
     parser = argparse.ArgumentParser()
     parser.add_argument("run_type", help="Local or Server")
     parser.add_argument("resume_part", help="Personal, Experience or Education")
@@ -21,10 +26,22 @@ def parse_command():
 
 
 class CV:
+    """Class for processing CV data from a PDF file."""
     def __init__(self):
         self.cv_data = self.process_cv_data()
     
     def __import_CV(self):
+        """
+        Import CV as a list of strings.
+        
+        :param self: self object, the instance of the class.
+        :type self: object
+        
+        :raises FileNotFoundError: If the specified file is not found.
+        
+        :rtype: list
+        :return: List of strings, each string representing a line of text from the CV.
+        """
         try:
             reader = PdfReader(path)
         except FileNotFoundError as fnf_error:
@@ -39,6 +56,28 @@ class CV:
         return text
     
     def process_cv_data(self):
+        """Processes the CV data from the PDF file given and returns a dictionary of the processed data.
+        
+        :param self: self, the instance of the class
+        :type self: object
+        
+        :rtype: dict
+        :return: A dictionary of the processed CV data with the following structure:
+                {
+                    "personal": {
+                        "name": str,
+                        "location": str,
+                        "email": str,
+                        "linkedin": str,
+                        "summary": str
+                    },
+                    "experience": {
+                        "companies": List[{"title": str, "company": str, "period": str}]
+                        "skills": List[str]
+                    },
+                    "education": List[{"university": str, "degree": str, "period": str}]
+                }
+        """
         text = self.__import_CV()
         for index, row in enumerate(text[2:], 2):
             match = re.findall(r".+@.+\..+", row)
@@ -96,7 +135,17 @@ class CV:
         }
         return cv_data
     
+    
     def fetch_cv_data(self, resume_part):
+        """Fetches the CV data for the specified resume part.
+        :param self: self, the instance of the class
+        :type self: object
+        :param resume_part: The resume part to fetch data for <personal/experience/education>.
+        :type resume_part: str
+        
+        :rtype: dict
+        :return: A dictionary of the processed CV data for the specified resume part.
+        """
         if "all" in resume_part:
             return self.cv_data
         return self.cv_data[resume_part]
@@ -104,21 +153,25 @@ class CV:
 
 @app.route("/", methods=["GET"])
 def index():
+    """Returns a jsonified dictionary of the data from the CV."""
     return jsonify(cv.fetch_cv_data("all"))
 
 
 @app.route("/personal", methods=["GET"])
 def personal():
+    """Returns a jsonified dictionary of the personal data from the CV."""
     return jsonify(cv.fetch_cv_data("personal"))
 
 
 @app.route("/experience", methods=["GET"])
 def experience():
+    """Returns a jsonified dictionary of the experience data from the CV."""
     return jsonify(cv.fetch_cv_data("experience"))
 
 
 @app.route("/education", methods=["GET"])
 def education():
+    """Returns a jsonified dictionary of the education data from the CV."""
     return jsonify(cv.fetch_cv_data("education"))
 
 
