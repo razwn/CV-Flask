@@ -22,7 +22,7 @@ def parse_command():
 
 class CV:
     def __init__(self):
-        pass
+        self.cv_data = self.process_cv_data()
     
     def __import_CV(self):
         try:
@@ -104,22 +104,22 @@ class CV:
 
 @app.route("/", methods=["GET"])
 def index():
-    return jsonify("Hello World!")
+    return jsonify(cv.fetch_cv_data("all"))
 
 
 @app.route("/personal", methods=["GET"])
 def personal():
-    return jsonify("Personal Info")
+    return jsonify(cv.fetch_cv_data("personal"))
 
 
 @app.route("/experience", methods=["GET"])
 def experience():
-    return jsonify("Experience Info")
+    return jsonify(cv.fetch_cv_data("experience"))
 
 
 @app.route("/education", methods=["GET"])
 def education():
-    return jsonify("Education Info")
+    return jsonify(cv.fetch_cv_data("education"))
 
 
 if __name__ == "__main__":
