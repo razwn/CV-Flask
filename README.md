@@ -21,9 +21,11 @@ The script will be executed directly from the command line and will be provided 
 ### Console Output
 
 If we desire the output in the console, the following command needs to be run:
+
 ```python app.py local <personal/experience/education/all> <CV path>```
 
 ### API Output
 
 If we desire the output as a JSON file, printed in a browser or any API development tool, the following command needs to be run:
+
 ```python app.py server <personal/experience/education> <CV path>```
