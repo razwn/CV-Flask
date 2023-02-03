@@ -80,6 +80,7 @@ class CV:
         """
         text = self.__import_CV()
         for index, row in enumerate(text[2:], 2):
+            # Iterating over the rows omitting the first two rows as they are assumed to be the name and location and taken care of separately. 
             match = re.findall(r".+@.+\..+", row)
             if match:
                 email = match[0]
@@ -90,23 +91,22 @@ class CV:
                 linkedin_url = match[0]
             
             if "Summary" in row:
-                index_summary = index
+                index_summary = index # Storing the index of the row containing the word "Summary" for later use.
             
             elif "Experience" in row:
-                summary = text[index_summary + 1 : index]
+                summary = text[index_summary + 1 : index] # Using the index saved before to get the summary section.
                 summary = [row for row in summary if "\xa0" not in row]
                 
-                index_experience = index
+                index_experience = index # Storing the index of the row containing the word "Experience" for later use.
             
             elif "Education" in row:
-                experience_row_list = text[index_experience + 1 : index]
+                experience_row_list = text[index_experience + 1 : index] # Using the index saved before to get the experience section.
                 nr_exp = len(experience_row_list)
-                experiences = [experience_row_list[i : i + 3] for i in range(0, nr_exp, 3)]
+                experiences = [experience_row_list[i : i + 3] for i in range(0, nr_exp, 3)] # Splitting the list into sublists of length 3.
                 experiences = [
                     dict(zip(["title", "company", "period"], exp))
-                    for exp in experiences
-                ]
-                
+                    for exp in experiences 
+                ] # Creating a list of dictionaries with the keys "title", "company" and "period" and the values from the sublists.
                 index_education = index
                 
             elif "Licenses & Certifications" in row:
@@ -137,7 +137,7 @@ class CV:
     
     
     def fetch_cv_data(self, resume_part):
-        """Fetches the CV data for the specified resume part.
+        """Fetches the CV data for the specified resume part and returns it as a dictionary.
         :param self: self, the instance of the class
         :type self: object
         :param resume_part: The resume part to fetch data for <personal/experience/education>.
