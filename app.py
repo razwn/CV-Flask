@@ -23,6 +23,20 @@ def parse_command():
 class CV:
     def __init__(self):
         pass
+    
+    def __import_CV(self):
+        try:
+            reader = PdfReader(path)
+        except FileNotFoundError as fnf_error:
+            app.logger.error(f"File not found: {fnf_error}")
+            return str(fnf_error)
+        number_of_pages = len(reader.pages)
+        text = list()
+        for i in range(number_of_pages):
+            page = reader.pages[i]
+            page_text = page.extract_text().split("\n")[:-1]
+            text += page_text
+        return text
 
 
 @app.route("/", methods=["GET"])
